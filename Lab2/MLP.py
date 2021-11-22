@@ -1,12 +1,13 @@
 import random
 import time
+from copy import deepcopy
 
 import numpy as np
 import math
 
 
 class MLP:
-    def __init__(self, input_data_set, input_labels, train_data_set, train_labels, epochs=1000, l_rate=0.1, batch_size=0):
+    def __init__(self, input_data_set, input_labels, test_data_set, test_labels, epochs=1000, l_rate=0.1, batch_size=0):
         self.number_of_parameters = len(input_data_set[0])
 
         self.hidden_layers_list = []
@@ -15,8 +16,8 @@ class MLP:
         self.input_data_set = input_data_set
         self.input_labels = input_labels
 
-        self.train_data_set = train_data_set
-        self.train_labels = train_labels
+        self.test_data_set = test_data_set
+        self.test_labels = test_labels
 
         self.matrices_with_weights = []
         self.biases = []
@@ -31,6 +32,13 @@ class MLP:
 
         self.l_rate = l_rate
         self.batch_size = batch_size
+
+        self.max_accuracy_error_early_stopping = 0.02
+        self.max_accuracy = 0.0
+        self.best_weights_matrices = None
+        self.best_biases = None
+
+        self.early_stopping = False
 
     def calculate_weights_matrixes(self):
         for x in range(len(self.hidden_layers_list) + 1):
@@ -139,10 +147,28 @@ class MLP:
                     self.update_weights(change_w)
                     self.update_biases(change_b)
 
-            accuracy = self.test_accuracy(self.train_data_set, self.train_labels)
-            print('Epoch: {0}, Time Spent: {1:.2f}s, Accuracy: {2}'.format(
-                i + 1, time.time() - start_time, accuracy
+                if self.early_stopping:
+                    test_set_accuracy = self.test_accuracy(self.test_data_set, self.test_labels)
+                    self.check_early_stopping(test_set_accuracy)
+
+            test_set_accuracy = self.test_accuracy(self.test_data_set, self.test_labels)
+            print('Epoch: {0}, Time Spent: {1:.2f}s, Test data set accuracy: {2}'.format(
+                i + 1, time.time() - start_time, test_set_accuracy
             ))
+
+            self.check_early_stopping(test_set_accuracy)
+
+    def check_early_stopping(self, validation_set_accuracy):
+        # print(validation_set_accuracy)
+        if validation_set_accuracy > self.max_accuracy:
+            self.best_weights_matrices = deepcopy(self.matrices_with_weights)
+            self.best_biases = deepcopy(self.biases)
+            self.max_accuracy = validation_set_accuracy
+        if validation_set_accuracy + self.max_accuracy_error_early_stopping < self.max_accuracy:
+            self.matrices_with_weights = self.best_weights_matrices
+            self.biases = self.best_biases
+            # print("Early stopping! Przywracanie najlepszych wag...")
+
 
     def update_weights(self, change_w):
         for i in range(len(self.hidden_layers_list) + 1):

@@ -11,9 +11,9 @@ if __name__ == '__main__':
 
     # print('X_train: ' + str(train_X.shape))
 
-    mlp = MLP(train_X[0:2000], train_y[0:2000], test_X[0:1000], test_y[0:1000], epochs=1000, l_rate=0.1, batch_size=0)
-    mlp.add_layer(64, 'sigm')
-    mlp.add_layer(32, 'sigm')
+    mlp = MLP(train_X[0:2000], train_y[0:2000], test_X[0:1000], test_y[0:1000], epochs=1000, l_rate=0.01, batch_size=0)
+    mlp.add_layer(64, 'tanh')
+    mlp.add_layer(32, 'tanh')
     # mlp.add_layer(16, 'relu')
     mlp.finalize_model()
     mlp.train()
