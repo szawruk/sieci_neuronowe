@@ -7,7 +7,7 @@ import math
 
 
 class MLP:
-    def __init__(self, input_data_set, input_labels, test_data_set, test_labels, epochs=1000, l_rate=0.1, batch_size=0):
+    def __init__(self, input_data_set, input_labels, test_data_set, test_labels, epochs=1000, l_rate=0.1, batch_size=0, deviation=0.1):
         self.number_of_parameters = len(input_data_set[0])
 
         self.hidden_layers_list = []
@@ -23,7 +23,7 @@ class MLP:
         self.biases = []
 
         self.mean_centre_of_distribution = 0
-        self.standard_deviation = 0.1
+        self.standard_deviation = deviation
 
         self.a_values = {}
         self.z_values = {}
@@ -117,6 +117,12 @@ class MLP:
             batch_iterator = 0
             batch_change_w = []
             batch_change_b = []
+
+            if self.batch_size > 0:
+                c = list(zip(self.input_data_set, self.input_labels))
+                random.shuffle(c)
+                self.input_data_set, self.input_labels = zip(*c)
+
             for x, y in zip(self.input_data_set, self.input_labels):
                 output = self.forward(x)
                 y_labels = np.zeros(len(output))
@@ -152,8 +158,12 @@ class MLP:
                     self.check_early_stopping(test_set_accuracy)
 
             test_set_accuracy = self.test_accuracy(self.test_data_set, self.test_labels)
-            print('Epoch: {0}, Time Spent: {1:.2f}s, Test data set accuracy: {2}'.format(
-                i + 1, time.time() - start_time, test_set_accuracy
+            # print('Epoch: {0}, Time Spent: {1:.2f}s, Test data set accuracy: {2}'.format(
+            #     i + 1, time.time() - start_time, test_set_accuracy
+            # ))
+
+            print('{0};{1}'.format(
+                i + 1, str(test_set_accuracy * 100).replace('.', ',')
             ))
 
             self.check_early_stopping(test_set_accuracy)
