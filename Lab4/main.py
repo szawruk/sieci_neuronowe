@@ -17,7 +17,7 @@ train_size = 30000
 test_size = 5000
 
 epochs = 6
-iterations = 2
+iterations = 5
 
 # BADANIE LICZBY WARSTW KONWOLUCYJNYCH
 def research1():
