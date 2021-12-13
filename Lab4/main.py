@@ -65,7 +65,7 @@ def research1():
 
 # BADANIE ROZMIARU KERNEL
 def research2():
-    params = [1, 2, 3, 4, 5, 6]
+    params = [2, 3, 4, 5, 6]
     accuracy_list_result = []
     time_list_result = []
 
@@ -79,7 +79,7 @@ def research2():
 
             start = time.time()
 
-            model = networkGenerator.getCNNNetwork(layers_number=param, kernel_size=4, add_pooling_layer=False, pool_size=2)
+            model = networkGenerator.getCNNNetwork(layers_number=2, kernel_size=param, add_pooling_layer=False, pool_size=2)
             history = model.fit(train_X[0:train_size], train_y[0:train_size], validation_split=0.2, epochs=epochs)
 
             stop = time.time()
@@ -283,10 +283,10 @@ def research5():
 
 if __name__ == '__main__':
     # research1()
-    # research2()
+    research2()
     # research3()
     # research4()
-    research5()
+    # research5()
 
 
 def main():
